@@ -1,11 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
-const cors = require('cors')
+const cors = require('cors');
+const Note = require('./models/note');
 
 const app = express();
 app.use(cors())
 
-const PORT = process.env.PORT || 3001
 
 // Define a custom token for Morgan to log request body
 morgan.token('postData', (req) => {
@@ -17,39 +18,19 @@ app.use(morgan('tiny'));
 
 // Add Morgan middleware with custom token to log request body for POST requests
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData', {
-  skip: (req, res) => req.method !== 'POST' // Skip logging for non-POST requests
+    skip: (req, res) => req.method !== 'POST' // Skip logging for non-POST requests
 }));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-let persons = [
-    {
-        "id": 1,
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": 2,
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": 3,
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": 4,
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-];
 
-// GET request to fetch all persons
-app.get('/api/persons', (req, res) => {
-    res.json(persons);
-});
+app.get('/api/notes', (request, response) => {
+    Note.find({}).then(notes => {
+        console.log(password);
+        response.json(notes)
+    })
+})
 
 // GET request to get information about the phonebook
 app.get('/info', (req, res) => {
@@ -108,6 +89,7 @@ app.post('/api/persons', (req, res) => {
 });
 
 // Start the server
+const PORT = process.env.PORT
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+    console.log(`Server running on port ${PORT}`)
+})
